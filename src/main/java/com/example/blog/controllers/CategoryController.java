@@ -6,18 +6,22 @@ import com.example.blog.domain.entities.Category;
 import com.example.blog.mappers.CategoryMapper;
 import com.example.blog.services.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "api/v1/categories")
 @RequiredArgsConstructor
-public class CategoryController {
+public class CategoryController extends BaseController {
 
+    private static final Logger log = LoggerFactory.getLogger(CategoryController.class);
     private final CategoryService categoryService;
     private final CategoryMapper categoryMapper;
 
@@ -36,6 +40,15 @@ public class CategoryController {
                 categoryMapper.toDto(isCreated),
                 HttpStatus.CREATED
         );
+    }
+    @PostMapping("/update/{id}")
+    public ResponseEntity<?> updateCategory(@PathVariable UUID id, @RequestBody Category categoryDetails){
+        Category isCategoryUpdated = categoryService.updateCategory(id,categoryDetails);
+        return ResponseEntity.ok(Map.of(
+                "status", true,
+                "message", "tags updated",
+                "data", isCategoryUpdated
+        ));
     }
 
     @DeleteMapping(path = "/delete/{id}")
